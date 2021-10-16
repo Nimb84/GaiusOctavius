@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GO.Commands\GO.Commands.csproj" />
+    <ProjectReference Include="..\GO.DataAccess.MsSql\GO.DataAccess.MsSql.csproj" />
+    <ProjectReference Include="..\GO.Integrations\GO.Integrations.csproj" />
+  </ItemGroup>
+
+</Project>
