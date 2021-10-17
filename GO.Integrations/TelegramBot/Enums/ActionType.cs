@@ -5,6 +5,6 @@
 		None,
 		Decline,
 		Approve,
-		ChangeCategory
+		Change
 	}
 }

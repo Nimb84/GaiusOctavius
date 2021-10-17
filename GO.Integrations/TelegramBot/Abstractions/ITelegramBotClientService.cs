@@ -22,6 +22,12 @@ namespace GO.Integrations.TelegramBot.Abstractions
 			long chatId,
 			int messageId,
 			string message,
+			CancellationToken cancellationToken = default);
+
+		Task<Message> UpdateTextMessageAsync(
+			long chatId,
+			int messageId,
+			string message,
 			IReplyMarkup markup = null,
 			CancellationToken cancellationToken = default);
 

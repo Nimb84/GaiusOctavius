@@ -43,6 +43,18 @@ namespace GO.Integrations.TelegramBot.Services
 			long chatId,
 			int messageId,
 			string message,
+			CancellationToken cancellationToken = default) =>
+			_telegramBotClient.EditMessageTextAsync(
+				new ChatId(chatId),
+				messageId,
+				message,
+				replyMarkup: null,
+				cancellationToken: cancellationToken);
+
+		public Task<Message> UpdateTextMessageAsync(
+			long chatId,
+			int messageId,
+			string message,
 			IReplyMarkup markup = null,
 			CancellationToken cancellationToken = default) =>
 			_telegramBotClient.EditMessageTextAsync(

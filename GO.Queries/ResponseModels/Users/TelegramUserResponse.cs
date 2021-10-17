@@ -11,6 +11,6 @@ namespace GO.Queries.ResponseModels.Users
 
 		public Scopes CurrentScope { get; set; }
 
-		public Guid? ServiceId { get; set; }
+		public Guid? BudgetId { get; set; }
 	}
 }

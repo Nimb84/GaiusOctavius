@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GO.Domain.Enums.Budgets;
+using GO.Domain.Extensions;
 using GO.Integrations.TelegramBot.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -9,23 +10,14 @@ namespace GO.Integrations.TelegramBot.Helpers
 {
 	internal static class InlineKeyboardHelper
 	{
-		public static IReplyMarkup GetLockUserKeyboard(Guid userId, ActionType type)
-		{
-			var icon = type switch
-			{
-				ActionType.Decline => "❌",
-				ActionType.Approve => "✔",
-				_ => throw new ArgumentOutOfRangeException(nameof(ActionType), type, null)
-			};
-
-			return GetKeyboard(new List<Dictionary<string, string>>
+		public static IReplyMarkup GetLockUserKeyboard(Guid userId, ActionType type) =>
+			GetKeyboard(new List<Dictionary<string, string>>
 			{
 				new ()
 				{
-					{icon, $"/{CommandType.Management} {type} {userId}"},
+					{GetActionIcon(type), $"/{CommandType.Management} {type} {userId.ToAlphanumeric()}"},
 				}
 			});
-		}
 
 		public static IReplyMarkup GetBudgetRecordKeyboard(Guid recordId)
 		{
@@ -55,8 +47,8 @@ namespace GO.Integrations.TelegramBot.Helpers
 				},
 				new ()
 				{
-					{"✔", $"/{CommandType.Budget} {ActionType.Approve} {recordId}"},
-					{"❌", $"/{CommandType.Budget} {ActionType.Decline} {recordId}"},
+					{GetActionIcon(ActionType.Approve), $"/{CommandType.Budget} {ActionType.Approve} {recordId.ToAlphanumeric()}"},
+					{GetActionIcon(ActionType.Decline), $"/{CommandType.Budget} {ActionType.Decline} {recordId.ToAlphanumeric()}"},
 				}
 			});
 		}
@@ -64,7 +56,7 @@ namespace GO.Integrations.TelegramBot.Helpers
 		public static string GetBudgetCategoryIcon(CategoryType category) =>
 			category switch
 			{
-				CategoryType.Other => "💩",
+				CategoryType.Other => "🧩",
 				CategoryType.Bill => "🧾",
 				CategoryType.Grocery => "🥩",
 				CategoryType.Household => "🏠",
@@ -81,10 +73,19 @@ namespace GO.Integrations.TelegramBot.Helpers
 				_ => throw new ArgumentOutOfRangeException(nameof(CategoryType), category, null)
 			};
 
-		private static string GetBudgetCategory(Guid recordId, CategoryType category) =>
-			$"/{CommandType.Budget} {ActionType.ChangeCategory} {recordId} {category}";
+		public static string GetActionIcon(ActionType action) =>
+			action switch
+			{
+				ActionType.None => "🔧",
+				ActionType.Decline => "❌",
+				ActionType.Approve => "✔",
+				ActionType.Change => "⚙",
+				_ => throw new ArgumentOutOfRangeException(nameof(ActionType), action, null)
+			};
 
-		// TODO: Fix mapping with new InlineKeyboardButton[][].
+		private static string GetBudgetCategory(Guid recordId, CategoryType category) =>
+			$"/{CommandType.Budget} {ActionType.Change} {recordId.ToAlphanumeric()} {category}";
+
 		private static InlineKeyboardMarkup GetKeyboard(IEnumerable<IDictionary<string, string>> buttons) =>
 			new(buttons
 				.Select(row => row
@@ -93,7 +94,7 @@ namespace GO.Integrations.TelegramBot.Helpers
 						Text = cell.Key,
 						CallbackData = cell.Value.ToLower()
 					})
-					.ToList())
-				.ToList());
+				)
+			);
 	}
 }

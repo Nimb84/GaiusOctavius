@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GO.Commands.BudgetRecords;
 using GO.Domain.Enums.Budgets;
+using GO.Domain.Extensions;
 using GO.Integrations.TelegramBot.Abstractions;
 using GO.Integrations.TelegramBot.Abstractions.Behaviors;
+using GO.Integrations.TelegramBot.Enums;
 using GO.Integrations.TelegramBot.Extensions;
 using GO.Integrations.TelegramBot.Helpers;
 using GO.Integrations.TelegramBot.Models.Requests;
@@ -37,7 +40,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			var command = new CreateBudgetRecordCommand
 			{
 				RecordId = Guid.NewGuid(),
-				BudgetId = currentUser.ServiceId.GetValueOrDefault(),
+				BudgetId = currentUser.BudgetId.GetValueOrDefault(),
 				CurrentUserId = currentUser.UserId,
 				CategoryType = CategoryType.Other,
 				Amount = request.Amount,
@@ -48,7 +51,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 
 			await _telegramBotClientService.SendTextMessageAsync(
 				model.GetChatId(),
-				$"-{request.Amount} {InlineKeyboardHelper.GetBudgetCategoryIcon(CategoryType.Other)} ({CategoryType.Other})",
+				$"-{request.Amount} {GetCategoryName(CategoryType.Other)}",
 				InlineKeyboardHelper.GetBudgetRecordKeyboard(command.RecordId),
 				cancellationToken);
 
@@ -63,7 +66,82 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			Update model,
 			CancellationToken cancellationToken = default)
 		{
-			throw new NotImplementedException();
+			var command = model.ToCommandRequest();
+			var action = EnumExtensions.Parse<ActionType>(command.Action);
+
+			return action switch
+			{
+				ActionType.Change => ChangeBudgetRecordCategoryAsync(
+					Guid.Parse(command.Arguments.First()),
+					currentUser.BudgetId.GetValueOrDefault(),
+					currentUser.UserId,
+					EnumExtensions.Parse<CategoryType>(command.Arguments[1]),
+					model,
+					cancellationToken),
+				ActionType.Approve => RemoveKeyboardAsync(model, cancellationToken),
+				ActionType.Decline => DeleteBudgetRecordAsync(
+					Guid.Parse(command.Arguments.First()),
+					currentUser.BudgetId.GetValueOrDefault(),
+					currentUser.UserId,
+					model,
+					cancellationToken),
+				_ => throw new ArgumentOutOfRangeException(nameof(ActionType), action, null)
+			};
 		}
+
+		private async Task ChangeBudgetRecordCategoryAsync(
+			Guid recordId,
+			Guid budgetId,
+			Guid userId,
+			CategoryType type,
+			Update model,
+			CancellationToken cancellationToken)
+		{
+			await _mediator.Send(new ChangeBudgetRecordCategoryCommand
+			{
+				RecordId = recordId,
+				BudgetId = budgetId,
+				CurrentUserId = userId,
+				CategoryType = type
+			}, cancellationToken);
+
+			await _telegramBotClientService.UpdateTextMessageAsync(
+				model.GetChatId(),
+				model.GetMessageId(),
+				model.GetText().Replace(GetCategoryName(CategoryType.Other), GetCategoryName(type)),
+				cancellationToken);
+		}
+
+		private Task RemoveKeyboardAsync(
+			Update model,
+			CancellationToken cancellationToken) =>
+			_telegramBotClientService.UpdateTextMessageAsync(
+				model.GetChatId(),
+				model.GetMessageId(),
+				model.GetText(),
+				cancellationToken);
+
+		private async Task DeleteBudgetRecordAsync(
+			Guid recordId,
+			Guid budgetId,
+			Guid userId,
+			Update model,
+			CancellationToken cancellationToken)
+		{
+			await _mediator.Send(new DeleteBudgetRecordCommand
+			{
+				RecordId = recordId,
+				BudgetId = budgetId,
+				CurrentUserId = userId
+			}, cancellationToken);
+
+			await _telegramBotClientService.DeleteMessageAsync(
+				model.GetChatId(),
+				model.GetMessageId(),
+				cancellationToken);
+		}
+
+		private static string GetCategoryName(CategoryType type) => 
+			$"{InlineKeyboardHelper.GetBudgetCategoryIcon(type)} ({type})";
 	}
 }

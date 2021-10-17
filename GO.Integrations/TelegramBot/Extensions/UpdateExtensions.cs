@@ -26,6 +26,14 @@ namespace GO.Integrations.TelegramBot.Extensions
 			model.Type switch
 			{
 				UpdateType.Message => model.Message.Text,
+				UpdateType.CallbackQuery => model.CallbackQuery.Message.Text,
+				_ => throw new ArgumentOutOfRangeException(nameof(model.Type), model.Type, null)
+			};
+
+		public static string GetCommand(this Update model) =>
+			model.Type switch
+			{
+				UpdateType.Message => model.Message.Text,
 				UpdateType.CallbackQuery => model.CallbackQuery.Data,
 				_ => throw new ArgumentOutOfRangeException(nameof(model.Type), model.Type, null)
 			};
@@ -36,7 +44,7 @@ namespace GO.Integrations.TelegramBot.Extensions
 		public static bool IsCommand(this Update model, out CommandType type)
 		{
 			type = model.Type is UpdateType.Message or UpdateType.CallbackQuery
-				? EnumExtensions.Parse<CommandType>(model.GetText().Split().First()[1..])
+				? EnumExtensions.Parse<CommandType>(model.GetCommand().Split().First()[1..])
 				: CommandType.None;
 
 			return type != CommandType.None;
@@ -44,7 +52,7 @@ namespace GO.Integrations.TelegramBot.Extensions
 
 		public static CommandRequest ToCommandRequest(this Update model) =>
 			model.IsCommand()
-				? new CommandRequest(model.GetText())
+				? new CommandRequest(model.GetCommand())
 				: throw new GoException(StatusCodes.Status400BadRequest, ExceptionType.Unsupported);
 
 		public static bool IsBot(this Update model) =>

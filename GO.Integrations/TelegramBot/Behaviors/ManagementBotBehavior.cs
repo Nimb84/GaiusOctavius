@@ -45,7 +45,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			Update model,
 			CancellationToken cancellationToken = default)
 		{
-			var command = model.ToCommandRequest().Command;
+			var command = model.ToCommandRequest().Type;
 
 			return command switch
 			{
@@ -122,7 +122,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 				await _telegramBotClientService.UpdateTextMessageAsync(
 					model.GetChatId(),
 					model.GetMessageId(),
-					model.CallbackQuery.Message.Text,
+					model.GetText(),
 					InlineKeyboardHelper.GetLockUserKeyboard(userId, ActionType.Approve),
 					cancellationToken);
 			}
@@ -143,7 +143,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 				await _telegramBotClientService.UpdateTextMessageAsync(
 					model.GetChatId(),
 					model.GetMessageId(),
-					model.CallbackQuery.Message.Text,
+					model.GetText(),
 					InlineKeyboardHelper.GetLockUserKeyboard(userId, ActionType.Decline),
 					cancellationToken);
 			}

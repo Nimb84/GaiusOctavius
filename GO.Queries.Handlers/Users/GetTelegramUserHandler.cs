@@ -45,7 +45,7 @@ namespace GO.Queries.Handlers.Users
 				UserId = connection.UserId,
 				ChatId = connection.ConnectionId,
 				CurrentScope = connection.CurrentScope,
-				ServiceId = connection.User.Budgets.FirstOrDefault()?.BudgetId
+				BudgetId = connection.User.Budgets.FirstOrDefault()?.BudgetId
 			};
 		}
 	}

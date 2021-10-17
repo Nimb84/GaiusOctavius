@@ -14,7 +14,7 @@ namespace GO.Integrations.TelegramBot.Models.Requests
 	{
 		private const string ParsePattern = @"^\/(\w+|\?)\s*(\w*)\s*(.*?)$";
 
-		public CommandType Command { get; }
+		public CommandType Type { get; }
 
 		public string Action { get; }
 
@@ -29,7 +29,7 @@ namespace GO.Integrations.TelegramBot.Models.Requests
 					StatusCodes.Status400BadRequest,
 					ExceptionType.Cast);
 
-			Command = EnumExtensions.Parse<CommandType>(matches[0].Groups[1].Value.Trim().ToLower());
+			Type = EnumExtensions.Parse<CommandType>(matches[0].Groups[1].Value.Trim().ToLower());
 			Action = matches[0].Groups[2].Value.Trim().ToLower();
 
 			var argsString = matches[0].Groups[3].Value.Trim().ToLower();
