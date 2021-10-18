@@ -1,4 +1,5 @@
 using GO.API.Bootstrap;
+using GO.Integrations.Hangfire.Bootstrap;
 using GO.Integrations.TelegramBot.Bootstrap;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace GO.API
 			services.RegisterSqlDatabase(Configuration);
 
 			services.RegisterTelegramBot(Configuration);
+			services.RegisterHangfire(Configuration);
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,6 +42,8 @@ namespace GO.API
 			app.UseHttpsRedirection();
 			app.UseRouting();
 			app.UseAuthorization();
+
+			app.UseHangfire();
 
 			app.UseEndpoints(endpoints =>
 			{

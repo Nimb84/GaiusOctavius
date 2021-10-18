@@ -11,7 +11,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace GO.API.Bootstrap
 {
-	public static class ApiControllersExtensions
+	public static class ApiControllersConfigurations
 	{
 		public static void RegisterControllers(this IServiceCollection services)
 		{

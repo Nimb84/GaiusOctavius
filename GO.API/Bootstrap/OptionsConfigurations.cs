@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GO.API.Bootstrap
 {
-	public static class OptionsExtensions
+	public static class OptionsConfigurations
 	{
 		public static IServiceCollection RegisterOptions(
 			this IServiceCollection services,

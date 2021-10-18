@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GO.API.Bootstrap
 {
-	public static class FluentValidationExtensions
+	public static class FluentValidationConfigurations
 	{
 		private static readonly List<Assembly> _validatorsAccemlyList = new()
 		{

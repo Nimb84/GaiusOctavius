@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Models;
 
 namespace GO.API.Bootstrap
 {
-	public static class SwaggerExtensions
+	public static class SwaggerConfigurations
 	{
 		public static void RegisterSwagger(this IServiceCollection services)
 		{

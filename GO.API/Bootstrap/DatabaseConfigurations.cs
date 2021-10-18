@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GO.API.Bootstrap
 {
-	public static class DatabaseExtensions
+	public static class DatabaseConfigurations
 	{
 		public static IServiceCollection RegisterSqlDatabase(
 			this IServiceCollection services,

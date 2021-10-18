@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GO.API.Bootstrap
 {
-	public static class MediatRBootstrapExtensions
+	public static class MediatRBootstrapConfigurations
 	{
 		public static IServiceCollection RegisterMediatR(this IServiceCollection services) =>
 			services
