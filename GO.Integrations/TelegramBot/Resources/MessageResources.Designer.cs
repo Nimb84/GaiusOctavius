@@ -22,14 +22,14 @@ namespace GO.Integrations.TelegramBot.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class CommandResources {
+    internal class MessageResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal CommandResources() {
+        internal MessageResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace GO.Integrations.TelegramBot.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GO.Integrations.TelegramBot.Resources.CommandResources", typeof(CommandResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GO.Integrations.TelegramBot.Resources.MessageResources", typeof(MessageResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,29 @@ namespace GO.Integrations.TelegramBot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} ({1}).
+        /// </summary>
+        internal static string BudgetCategory {
+            get {
+                return ResourceManager.GetString("BudgetCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}₴ {1}.
+        /// </summary>
+        internal static string BudgetRecord {
+            get {
+                return ResourceManager.GetString("BudgetRecord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} (@{1}) has been registered..
         /// </summary>
-        internal static string NewUser_Format {
+        internal static string NewUser {
             get {
-                return ResourceManager.GetString("NewUser_Format", resourceCulture);
+                return ResourceManager.GetString("NewUser", resourceCulture);
             }
         }
     }

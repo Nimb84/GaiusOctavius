@@ -117,7 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NewUser_Format" xml:space="preserve">
+  <data name="BudgetCategory" xml:space="preserve">
+    <value>{0} ({1})</value>
+    <comment>{0} - emoji
+{1} - category name</comment>
+  </data>
+  <data name="BudgetRecord" xml:space="preserve">
+    <value>{0}₴ {1}</value>
+    <comment>{0} - amount
+{1} - category</comment>
+  </data>
+  <data name="NewUser" xml:space="preserve">
     <value>{0} (@{1}) has been registered.</value>
     <comment>{0} - user full name
 {1} - user nickname</comment>

@@ -74,7 +74,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 
 			await _telegramBotClientService.SendTextMessageAsync(
 				_telegramBotSettings.AdminChatId,
-				CommandResources.NewUser_Format
+				MessageResources.NewUser
 					.FormatWith($"{command.FirstName} {command.LastName}", command.NickName),
 				InlineKeyboardHelper.GetLockUserKeyboard(command.CurrentUserId, ActionType.Decline),
 				cancellationToken);
@@ -157,13 +157,13 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			if (model.IsBot() || model.Message.Chat.Id != model.Message.From.Id)
 				throw new GoForbiddenException();
 
-			var command = new GetUserQuery
+			var query = new GetUserQuery
 			{
 				UserId = currentUser.UserId,
 				CurrentUserId = currentUser.UserId
 			};
 
-			var user = await _mediator.Send(command, cancellationToken);
+			var user = await _mediator.Send(query, cancellationToken);
 
 			await _telegramBotClientService.SendTextMessageAsync(
 				model.Message.Chat.Id,

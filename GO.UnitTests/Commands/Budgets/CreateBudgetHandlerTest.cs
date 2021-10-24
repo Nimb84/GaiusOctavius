@@ -6,6 +6,7 @@ using GO.Commands.Handlers.Budgets;
 using GO.Domain.Entities.Budgets;
 using GO.Domain.Entities.Users;
 using GO.Domain.Enums.Management;
+using GO.Domain.Enums.Users;
 using GO.Domain.Exceptions;
 using GO.UnitTests.Builders;
 using MediatR;
@@ -17,6 +18,8 @@ namespace GO.UnitTests.Commands.Budgets
 	public sealed class CreateBudgetHandlerTest
 	{
 		private readonly CancellationToken _cancellationToken;
+		private const long FakeConnectionId = -1;
+		private const ConnectionType FakeDefaultConnectionType = ConnectionType.Telegram;
 
 		public CreateBudgetHandlerTest()
 		{
@@ -30,7 +33,11 @@ namespace GO.UnitTests.Commands.Budgets
 			var budgetId = Guid.NewGuid();
 
 			var contextHandler = new ApplicationDbContextTest(nameof(Create_budget_with_user_success));
-			var fakeUserId = await AddFakeCorrectUser(contextHandler, _cancellationToken);
+			var fakeUserId = await FakeUserHelper.AddCorrectAsync(
+				contextHandler,
+				FakeConnectionId,
+				FakeDefaultConnectionType,
+				_cancellationToken);
 
 			var command = new CreateBudgetCommand
 			{
@@ -47,18 +54,24 @@ namespace GO.UnitTests.Commands.Budgets
 		}
 
 		[Fact]
-		public void Handle_throws_exception_when_non_existent_user()
+		public async Task Handle_throws_exception_when_non_existent_user()
 		{
 			var budgetId = Guid.NewGuid();
 
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_non_existent_user));
+			await FakeUserHelper.AddCorrectAsync(
+				contextHandler,
+				FakeConnectionId,
+				FakeDefaultConnectionType,
+				_cancellationToken);
+
 			var command = new CreateBudgetCommand
 			{
 				BudgetId = budgetId,
 				CurrentUserId = Guid.NewGuid()
 			};
 
-			Assert.ThrowsAsync<GoNotFoundException>(async () => await TestAsync(contextHandler, command));
+			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
 		}
 
 		[Fact]
@@ -82,7 +95,12 @@ namespace GO.UnitTests.Commands.Budgets
 			var budgetId = Guid.NewGuid();
 
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_forbidden_no_access));
-			var fakeUserId = await AddFakeNoRightUser(contextHandler, _cancellationToken);
+			var fakeUserId = await FakeUserHelper.AddNoRightsAsync(
+				contextHandler,
+				FakeConnectionId,
+				FakeDefaultConnectionType,
+				_cancellationToken);
+
 			var command = new CreateBudgetCommand
 			{
 				BudgetId = budgetId,
@@ -95,51 +113,9 @@ namespace GO.UnitTests.Commands.Budgets
 		private Task<Unit> TestAsync(ApplicationDbContextTest contextHandler, CreateBudgetCommand command) =>
 			contextHandler.ExecuteWithTestContextAsync(context =>
 			{
-				var service = new CreateBudgetHandler(context);
+				var handler = new CreateBudgetHandler(context);
 
-				return service.Handle(command, _cancellationToken);
-			});
-
-		private static Task<Guid> AddFakeCorrectUser(
-			ApplicationDbContextTest contextHandler,
-			CancellationToken cancellationToken) =>
-			contextHandler.ExecuteWithTestContextAsync(async context =>
-			{
-				var fakeUser = new User
-				{
-					Id = Guid.NewGuid(),
-					CreatedBy = Guid.NewGuid(),
-					CreatedDate = DateTimeOffset.UtcNow,
-					FirstName = "TestUserFirstName",
-					LastName = "TestUserLastName",
-					Scopes = Scopes.Budget
-				};
-
-				context.Users.Add(fakeUser);
-				await context.SaveChangesAsync(cancellationToken);
-
-				return fakeUser.Id;
-			});
-
-		private static Task<Guid> AddFakeNoRightUser(
-			ApplicationDbContextTest contextHandler,
-			CancellationToken cancellationToken) =>
-			contextHandler.ExecuteWithTestContextAsync(async context =>
-			{
-				var fakeUser = new User
-				{
-					Id = Guid.NewGuid(),
-					CreatedBy = Guid.NewGuid(),
-					CreatedDate = DateTimeOffset.UtcNow,
-					FirstName = "TestUserFirstName",
-					LastName = "TestUserLastName",
-					Scopes = Scopes.None
-				};
-
-				context.Users.Add(fakeUser);
-				await context.SaveChangesAsync(cancellationToken);
-
-				return fakeUser.Id;
+				return handler.Handle(command, _cancellationToken);
 			});
 
 		private static Task<Budget> GetEntityAsync(

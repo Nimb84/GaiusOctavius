@@ -16,7 +16,5 @@ namespace GO.Commands.BudgetRecords
 		public CategoryType CategoryType { get; set; }
 
 		public uint Amount { get; set; }
-
-		public string Description { get; set; }
 	}
 }

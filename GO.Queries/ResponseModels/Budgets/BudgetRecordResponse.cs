@@ -11,8 +11,6 @@ namespace GO.Queries.ResponseModels.Budgets
 
 		public uint Amount { get; set; }
 
-		public string Description { get; set; }
-
 		public Guid CreatedBy { get; set; }
 
 		public DateTimeOffset CreatedDate { get; set; }

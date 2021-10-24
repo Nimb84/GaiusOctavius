@@ -69,7 +69,8 @@ namespace GO.Integrations.TelegramBot.Helpers
 				CategoryType.Education => "📖",
 				CategoryType.Travel => "🏖",
 				CategoryType.Emergency => "⚠️",
-				CategoryType.Personal => "🚩",
+				CategoryType.Personal => "😈",
+				CategoryType.Income => "🤑",
 				_ => throw new ArgumentOutOfRangeException(nameof(CategoryType), category, null)
 			};
 

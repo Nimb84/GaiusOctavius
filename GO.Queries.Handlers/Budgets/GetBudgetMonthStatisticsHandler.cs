@@ -69,7 +69,6 @@ namespace GO.Queries.Handlers.Budgets
 							Id = record.Id,
 							CategoryType = record.CategoryType,
 							Amount = record.Amount,
-							Description = record.Description,
 							CreatedBy = record.CreatedBy,
 							CreatedDate = record.CreatedDate
 						})

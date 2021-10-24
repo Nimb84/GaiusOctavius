@@ -45,7 +45,6 @@ namespace GO.Commands.Handlers.BudgetRecords
 				BudgetId = request.BudgetId,
 				CategoryType = request.CategoryType,
 				Amount = request.Amount,
-				Description = request.Description,
 				CreatedBy = request.CurrentUserId,
 				CreatedDate = DateTimeOffset.UtcNow,
 			};

@@ -15,6 +15,7 @@
 		Education,
 		Travel,
 		Emergency,
-		Personal
+		Personal,
+		Income
 	}
 }

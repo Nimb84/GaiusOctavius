@@ -11,7 +11,10 @@ using GO.Integrations.TelegramBot.Enums;
 using GO.Integrations.TelegramBot.Extensions;
 using GO.Integrations.TelegramBot.Helpers;
 using GO.Integrations.TelegramBot.Models.Requests;
+using GO.Integrations.TelegramBot.Resources;
+using GO.Queries.BudgetRecords;
 using GO.Queries.ResponseModels.Users;
+using Humanizer;
 using MediatR;
 using Telegram.Bot.Types;
 
@@ -42,16 +45,15 @@ namespace GO.Integrations.TelegramBot.Behaviors
 				RecordId = Guid.NewGuid(),
 				BudgetId = currentUser.BudgetId.GetValueOrDefault(),
 				CurrentUserId = currentUser.UserId,
-				CategoryType = CategoryType.Other,
+				CategoryType = request.Category,
 				Amount = request.Amount,
-				Description = request.Description
 			};
 
 			await _mediator.Send(command, cancellationToken);
 
 			await _telegramBotClientService.SendTextMessageAsync(
 				model.GetChatId(),
-				$"-{request.Amount} {GetCategoryName(CategoryType.Other)}",
+				GetMessage(command.Amount, command.CategoryType),
 				InlineKeyboardHelper.GetBudgetRecordKeyboard(command.RecordId),
 				cancellationToken);
 
@@ -105,10 +107,16 @@ namespace GO.Integrations.TelegramBot.Behaviors
 				CategoryType = type
 			}, cancellationToken);
 
+			var record = await _mediator.Send(new GetBudgetRecordQuery
+			{
+				BudgetRecordId = recordId,
+				UserId = userId
+			}, cancellationToken);
+
 			await _telegramBotClientService.UpdateTextMessageAsync(
 				model.GetChatId(),
 				model.GetMessageId(),
-				model.GetText().Replace(GetCategoryName(CategoryType.Other), GetCategoryName(type)),
+				GetMessage(record.Amount, record.CategoryType),
 				cancellationToken);
 		}
 
@@ -141,7 +149,11 @@ namespace GO.Integrations.TelegramBot.Behaviors
 				cancellationToken);
 		}
 
-		private static string GetCategoryName(CategoryType type) => 
-			$"{InlineKeyboardHelper.GetBudgetCategoryIcon(type)} ({type})";
+		private static string GetMessage(uint amount, CategoryType category) =>
+			MessageResources.BudgetRecord.FormatWith(
+				$"{(category is CategoryType.Income ? "+" : "-")}{amount}",
+				MessageResources.BudgetCategory.FormatWith(
+					InlineKeyboardHelper.GetBudgetCategoryIcon(category),
+					category));
 	}
 }

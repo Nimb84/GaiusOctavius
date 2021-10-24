@@ -14,9 +14,6 @@ namespace GO.DataAccess.MsSql.Configurations.Budgets
 
 			builder.Property(record => record.Amount)
 				.IsRequired();
-
-			builder.Property(record => record.Description)
-				.HasMaxLength(ValidationConstants.DescriptionMaxLength);
 		}
 	}
 }

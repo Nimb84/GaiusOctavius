@@ -4,7 +4,7 @@ using FluentValidation;
 using GO.Domain.Constants;
 using GO.Queries.Budgets;
 
-namespace GO.Queries.Validators.BudgetRecords
+namespace GO.Queries.Validators.Budgets
 {
 	public sealed class GetBudgetMonthStatisticsValidator
 		: AbstractValidator<GetBudgetMonthStatisticsQuery>

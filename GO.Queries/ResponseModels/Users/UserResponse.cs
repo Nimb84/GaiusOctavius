@@ -13,6 +13,8 @@ namespace GO.Queries.ResponseModels.Users
 
 		public Scopes Scopes { get; set; }
 
+		public long ConnectionId { get; set; }
+
 		public string Nickname { get; set; }
 
 		public Scopes? CurrentScope { get; set; }

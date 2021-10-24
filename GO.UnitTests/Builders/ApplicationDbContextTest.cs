@@ -11,7 +11,7 @@ namespace GO.UnitTests.Builders
 
 		public ApplicationDbContextTest(string dbName) =>
 			_options = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseInMemoryDatabase(dbName)
+				.UseInMemoryDatabase($"{dbName}:{Guid.NewGuid()}")
 				.Options;
 
 		public async Task<TEntity> ExecuteWithTestContextAsync<TEntity>(

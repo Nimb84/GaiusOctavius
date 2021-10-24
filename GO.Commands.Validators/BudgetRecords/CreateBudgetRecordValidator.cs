@@ -20,9 +20,6 @@ namespace GO.Commands.Validators.BudgetRecords
 
 			RuleFor(item => item.Amount)
 				.NotEmpty();
-
-			RuleFor(item => item.Description)
-				.MaximumLength(ValidationConstants.DescriptionMaxLength);
 		}
 	}
 }

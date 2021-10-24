@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GO.DataAccess.MsSql;
 using GO.Domain.Entities.Users;
+using GO.Domain.Enums.Users;
 using GO.Domain.Exceptions;
 using GO.Queries.ResponseModels.Users;
 using GO.Queries.Users;
@@ -25,12 +26,19 @@ namespace GO.Queries.Handlers.Users
 		{
 			var user = await _context.Users
 				.Include(user => user.Connections
-					.Where(connection => connection.Type == request.ConnectionType))
-				.FirstOrDefaultAsync(user => !user.IsArchived
-																		 && user.Id == request.UserId, cancellationToken);
+					.Where(connection => request.ConnectionType == ConnectionType.Unsupported
+															 || connection.Type == request.ConnectionType))
+				.FirstOrDefaultAsync(
+					user => !user.IsArchived
+									&& user.Id == request.UserId, cancellationToken);
 
-			if (user == default)
+			if (user == default
+					|| request.ConnectionType != default
+					&& user.Connections.All(connection => connection.ConnectionId == default))
 				throw new GoNotFoundException(nameof(User));
+
+			if(user.IsLocked)
+				throw new GoForbiddenException();
 
 			return new UserResponse
 			{
@@ -39,6 +47,7 @@ namespace GO.Queries.Handlers.Users
 				LastName = user.LastName,
 				Scopes = user.Scopes,
 				Nickname = user.Connections.FirstOrDefault()?.NickName,
+				ConnectionId = user.Connections.FirstOrDefault()?.ConnectionId ?? default,
 				CurrentScope = user.Connections.FirstOrDefault()?.CurrentScope
 			};
 		}
