@@ -53,7 +53,6 @@ namespace GO.Queries.Handlers.Budgets
 				{
 					Id = budget.Id,
 					IsArchived = budget.IsArchived,
-					Payday = budget.Payday,
 					CreatedById = budget.CreatedBy,
 					Users = budget.Users
 						.Select(user => new UserShortResponse

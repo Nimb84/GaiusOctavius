@@ -2,12 +2,12 @@
 
 namespace GO.Queries.ResponseModels.Users
 {
-	public sealed class UserShortResponse
+	public sealed record UserShortResponse
 	{
-		public Guid Id { get; set; }
+		public Guid Id { get; init; }
 
-		public string FirstName { get; set; }
+		public string FirstName { get; init; }
 
-		public string LastName { get; set; }
+		public string LastName { get; init; }
 	}
 }

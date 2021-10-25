@@ -53,8 +53,7 @@ namespace GO.DataAccess.MsSql.Seeds
 					Id = Guid.Parse("936DA01F-9ABD-4d9d-80C7-02AF85C822A8"),
 					CreatedBy = Guid.Parse("936DA01F-9ABD-4d9d-80C7-02AF85C822A8"),
 					CreatedDate = DateTimeOffset.UtcNow,
-					IsArchived = false,
-					Payday = 0
+					IsArchived = false
 				}
 			});
 

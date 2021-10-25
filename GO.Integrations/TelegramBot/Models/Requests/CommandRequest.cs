@@ -5,12 +5,11 @@ using GO.Domain.Enums.Domain;
 using GO.Domain.Exceptions;
 using GO.Domain.Extensions;
 using GO.Integrations.TelegramBot.Enums;
-using Humanizer;
 using Microsoft.AspNetCore.Http;
 
 namespace GO.Integrations.TelegramBot.Models.Requests
 {
-	internal sealed class CommandRequest
+	internal sealed record CommandRequest
 	{
 		private const string ParsePattern = @"^\/(\w+|\?)\s*(\w*)\s*(.*?)$";
 

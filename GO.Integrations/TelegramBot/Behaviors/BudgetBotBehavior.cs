@@ -40,14 +40,12 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			CancellationToken cancellationToken = default)
 		{
 			var request = new BudgetRequest(model.Message.Text);
-			var command = new CreateBudgetRecordCommand
-			{
-				RecordId = Guid.NewGuid(),
-				BudgetId = currentUser.BudgetId.GetValueOrDefault(),
-				CurrentUserId = currentUser.UserId,
-				CategoryType = request.Category,
-				Amount = request.Amount,
-			};
+			var command = new CreateBudgetRecordCommand(
+				Guid.NewGuid(),
+				currentUser.BudgetId.GetValueOrDefault(),
+				request.Amount,
+				request.Category,
+				currentUser.UserId);
 
 			await _mediator.Send(command, cancellationToken);
 
@@ -99,19 +97,9 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			Update model,
 			CancellationToken cancellationToken)
 		{
-			await _mediator.Send(new ChangeBudgetRecordCategoryCommand
-			{
-				RecordId = recordId,
-				BudgetId = budgetId,
-				CurrentUserId = userId,
-				CategoryType = type
-			}, cancellationToken);
+			await _mediator.Send(new ChangeBudgetRecordCategoryCommand(recordId, budgetId, userId, type), cancellationToken);
 
-			var record = await _mediator.Send(new GetBudgetRecordQuery
-			{
-				BudgetRecordId = recordId,
-				UserId = userId
-			}, cancellationToken);
+			var record = await _mediator.Send(new GetBudgetRecordQuery(recordId, userId), cancellationToken);
 
 			await _telegramBotClientService.UpdateTextMessageAsync(
 				model.GetChatId(),
@@ -136,17 +124,9 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			Update model,
 			CancellationToken cancellationToken)
 		{
-			await _mediator.Send(new DeleteBudgetRecordCommand
-			{
-				RecordId = recordId,
-				BudgetId = budgetId,
-				CurrentUserId = userId
-			}, cancellationToken);
+			await _mediator.Send(new DeleteBudgetRecordCommand(recordId, budgetId, userId), cancellationToken);
 
-			await _telegramBotClientService.DeleteMessageAsync(
-				model.GetChatId(),
-				model.GetMessageId(),
-				cancellationToken);
+			await _telegramBotClientService.DeleteMessageAsync(model.GetChatId(), model.GetMessageId(), cancellationToken);
 		}
 
 		private static string GetMessage(uint amount, CategoryType category) =>

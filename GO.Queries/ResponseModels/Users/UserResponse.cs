@@ -3,20 +3,20 @@ using GO.Domain.Enums.Management;
 
 namespace GO.Queries.ResponseModels.Users
 {
-	public sealed class UserResponse
+	public sealed record UserResponse
 	{
-		public Guid Id { get; set; }
+		public Guid Id { get; init; }
 
-		public string FirstName { get; set; }
+		public string FirstName { get; init; }
 
-		public string LastName { get; set; }
+		public string LastName { get; init; }
 
-		public Scopes Scopes { get; set; }
+		public Scopes Scopes { get; init; }
 
-		public long ConnectionId { get; set; }
+		public long ConnectionId { get; init; }
 
-		public string Nickname { get; set; }
+		public string Nickname { get; init; }
 
-		public Scopes? CurrentScope { get; set; }
+		public Scopes? CurrentScope { get; init; }
 	}
 }

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace GO.Integrations.TelegramBot.Models.Requests
 {
-	internal sealed class BudgetRequest
+	internal sealed record BudgetRequest
 	{
 		private const string ParsePattern = @"^[+-]?(\d+([,.]?\d{0,2}))\s*(\w*)?";
 

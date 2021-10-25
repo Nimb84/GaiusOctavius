@@ -39,11 +39,7 @@ namespace GO.UnitTests.Commands.Budgets
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var command = new CreateBudgetCommand
-			{
-				BudgetId = budgetId,
-				CurrentUserId = fakeUserId
-			};
+			var command = new CreateBudgetCommand(budgetId, fakeUserId);
 
 			await TestAsync(contextHandler, command);
 
@@ -65,11 +61,7 @@ namespace GO.UnitTests.Commands.Budgets
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var command = new CreateBudgetCommand
-			{
-				BudgetId = budgetId,
-				CurrentUserId = Guid.NewGuid()
-			};
+			var command = new CreateBudgetCommand(budgetId, Guid.NewGuid());
 
 			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
 		}
@@ -80,11 +72,7 @@ namespace GO.UnitTests.Commands.Budgets
 			var budgetId = Guid.NewGuid();
 
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_forbidden_wrong_userId));
-			var command = new CreateBudgetCommand
-			{
-				BudgetId = budgetId,
-				CurrentUserId = Guid.NewGuid()
-			};
+			var command = new CreateBudgetCommand(budgetId, Guid.NewGuid());
 
 			Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
 		}
@@ -101,11 +89,7 @@ namespace GO.UnitTests.Commands.Budgets
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var command = new CreateBudgetCommand
-			{
-				BudgetId = budgetId,
-				CurrentUserId = fakeUserId
-			};
+			var command = new CreateBudgetCommand(budgetId, fakeUserId);
 
 			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
 		}

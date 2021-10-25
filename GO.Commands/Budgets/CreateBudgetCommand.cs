@@ -3,11 +3,6 @@ using MediatR;
 
 namespace GO.Commands.Budgets
 {
-	public sealed class CreateBudgetCommand
-		: IRequest<Unit>
-	{
-		public Guid BudgetId { get; set; }
-
-		public Guid CurrentUserId { get; set; }
-	}
+	public sealed record CreateBudgetCommand(Guid BudgetId, Guid CurrentUserId)
+		: IRequest<Unit>;
 }

@@ -33,12 +33,7 @@ namespace GO.UnitTests.Queries.Users
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var query = new GetUserQuery
-			{
-				UserId = fakeUserId,
-				CurrentUserId = fakeUserId,
-				ConnectionType = ConnectionType.Unsupported
-			};
+			var query = new GetUserQuery(fakeUserId, fakeUserId);
 
 			var response = await TestAsync(contextHandler, query);
 
@@ -59,12 +54,7 @@ namespace GO.UnitTests.Queries.Users
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var query = new GetUserQuery
-			{
-				UserId = fakeUserId,
-				CurrentUserId = fakeUserId,
-				ConnectionType = ConnectionType.Telegram
-			};
+			var query = new GetUserQuery(fakeUserId, fakeUserId, ConnectionType.Telegram);
 
 			var response = await TestAsync(contextHandler, query);
 
@@ -87,12 +77,7 @@ namespace GO.UnitTests.Queries.Users
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var query = new GetUserQuery
-			{
-				UserId = fakeUserId,
-				CurrentUserId = fakeUserId,
-				ConnectionType = ConnectionType.Unsupported
-			};
+			var query = new GetUserQuery(fakeUserId, fakeUserId);
 
 			await Assert.ThrowsAsync<GoNotFoundException>(async () => await TestAsync(contextHandler, query));
 		}
@@ -107,12 +92,7 @@ namespace GO.UnitTests.Queries.Users
 				ConnectionType.Unsupported,
 				_cancellationToken);
 
-			var query = new GetUserQuery
-			{
-				UserId = fakeUserId,
-				CurrentUserId = fakeUserId,
-				ConnectionType = ConnectionType.Telegram
-			};
+			var query = new GetUserQuery(fakeUserId, fakeUserId, ConnectionType.Telegram);
 
 			await Assert.ThrowsAsync<GoNotFoundException>(async () => await TestAsync(contextHandler, query));
 		}
@@ -127,11 +107,7 @@ namespace GO.UnitTests.Queries.Users
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var query = new GetUserQuery
-			{
-				UserId = fakeUserId,
-				CurrentUserId = fakeUserId
-			};
+			var query = new GetUserQuery(fakeUserId, fakeUserId);
 
 			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, query));
 		}
@@ -146,11 +122,7 @@ namespace GO.UnitTests.Queries.Users
 				FakeDefaultConnectionType,
 				_cancellationToken);
 
-			var query = new GetUserQuery
-			{
-				UserId = fakeUserId,
-				CurrentUserId = fakeUserId
-			};
+			var query = new GetUserQuery(fakeUserId, fakeUserId);
 
 			await Assert.ThrowsAsync<GoNotFoundException>(async () => await TestAsync(contextHandler, query));
 		}

@@ -5,13 +5,6 @@ using MediatR;
 
 namespace GO.Queries.Users
 {
-	public sealed class GetUserQuery
-		: IRequest<UserResponse>
-	{
-		public Guid UserId { get; set; }
-
-		public Guid CurrentUserId { get; set; }
-
-		public ConnectionType ConnectionType { get; set; }
-	}
+	public sealed record GetUserQuery(Guid UserId, Guid CurrentUserId, ConnectionType ConnectionType = default)
+		: IRequest<UserResponse>;
 }

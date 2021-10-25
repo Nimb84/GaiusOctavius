@@ -61,14 +61,12 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			if (model.IsBot() || model.GetChatId() != model.GetTelegramId())
 				throw new GoForbiddenException();
 
-			var command = new RegisterTelegramUserCommand
-			{
-				CurrentUserId = Guid.NewGuid(),
-				FirstName = model.Message.From.FirstName,
-				LastName = model.Message.From.LastName,
-				NickName = model.Message.From.Username,
-				TelegramId = model.Message.From.Id
-			};
+			var command = new RegisterTelegramUserCommand(
+				Guid.NewGuid(),
+				model.Message.From.FirstName,
+				model.Message.From.LastName,
+				model.Message.From.Username,
+				model.Message.From.Id);
 
 			await _mediator.Send(command, cancellationToken);
 
@@ -157,11 +155,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 			if (model.IsBot() || model.Message.Chat.Id != model.Message.From.Id)
 				throw new GoForbiddenException();
 
-			var query = new GetUserQuery
-			{
-				UserId = currentUser.UserId,
-				CurrentUserId = currentUser.UserId
-			};
+			var query = new GetUserQuery(currentUser.UserId, currentUser.UserId);
 
 			var user = await _mediator.Send(query, cancellationToken);
 

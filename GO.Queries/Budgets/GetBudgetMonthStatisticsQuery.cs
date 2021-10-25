@@ -5,12 +5,12 @@ using MediatR;
 
 namespace GO.Queries.Budgets
 {
-	public sealed class GetBudgetMonthStatisticsQuery
+	public sealed record GetBudgetMonthStatisticsQuery
 		: PagedQueryFilter
 		, IRequest<BudgetResponse>
 	{
-		public Guid BudgetId { get; set; }
+		public Guid BudgetId { get; init; }
 
-		public Guid UserId { get; set; }
+		public Guid UserId { get; init; }
 	}
 }
