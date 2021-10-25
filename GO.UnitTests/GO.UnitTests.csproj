@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\BudgetRecords\" />
     <Folder Include="Queries\BudgetRecords\" />
     <Folder Include="Queries\Budgets\" />
   </ItemGroup>

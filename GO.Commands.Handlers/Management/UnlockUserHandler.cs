@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,13 +32,14 @@ namespace GO.Commands.Handlers.Management
 													 || user.Id == request.CurrentUserId))
 				.ToDictionaryAsync(user => user.Id, user => user, cancellationToken);
 
-			var user = userDictionary[request.UserId];
-			var currentUser = userDictionary[request.CurrentUserId];
+			var user = userDictionary.GetValueOrDefault(request.UserId);
+			var currentUser = userDictionary.GetValueOrDefault(request.CurrentUserId);
 
-			if (user == default || currentUser == default)
+			if (user == default)
 				throw new GoNotFoundException(nameof(User));
 
-			if (!currentUser.HasAccessTo(Scopes.Management, Scopes.Administration))
+			if (currentUser == default
+					|| !currentUser.HasAccessTo(Scopes.Management, Scopes.Administration))
 				throw new GoForbiddenException();
 
 			if (!user.IsLocked)

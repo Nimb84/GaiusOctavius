@@ -74,7 +74,7 @@ namespace GO.Integrations.TelegramBot.Behaviors
 				_telegramBotSettings.AdminChatId,
 				MessageResources.NewUser
 					.FormatWith($"{command.FirstName} {command.LastName}", command.NickName),
-				InlineKeyboardHelper.GetLockUserKeyboard(command.CurrentUserId, ActionType.Decline),
+				InlineKeyboardHelper.GetLockUserKeyboard(command.UserId, ActionType.Decline),
 				cancellationToken);
 		}
 

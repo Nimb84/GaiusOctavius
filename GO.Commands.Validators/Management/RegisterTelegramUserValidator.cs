@@ -8,7 +8,7 @@ namespace GO.Commands.Validators.Management
 	{
 		public RegisterTelegramUserValidator()
 		{
-			RuleFor(item => item.CurrentUserId)
+			RuleFor(item => item.UserId)
 				.NotEmpty();
 
 			RuleFor(item => item.TelegramId)

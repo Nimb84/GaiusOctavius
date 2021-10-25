@@ -35,8 +35,8 @@ namespace GO.Commands.Handlers.Management
 
 			var user = new User
 			{
-				Id = request.CurrentUserId,
-				CreatedBy = request.CurrentUserId,
+				Id = request.UserId,
+				CreatedBy = request.UserId,
 				CreatedDate = DateTimeOffset.UtcNow,
 				FirstName = request.FirstName,
 				LastName = request.LastName,
@@ -46,12 +46,12 @@ namespace GO.Commands.Handlers.Management
 					new()
 					{
 						Id = Guid.NewGuid(),
-						CreatedBy = request.CurrentUserId,
+						CreatedBy = request.UserId,
 						CreatedDate = DateTimeOffset.UtcNow,
 						NickName = request.NickName,
 						ConnectionId = request.TelegramId,
 						Type = ConnectionType.Telegram,
-						UserId = request.CurrentUserId,
+						UserId = request.UserId,
 						CurrentScope = Scopes.Budget
 					}
 				}

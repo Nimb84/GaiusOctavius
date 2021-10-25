@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using GO.Commands.Budgets;
 using GO.Commands.Handlers.Budgets;
 using GO.Domain.Entities.Budgets;
-using GO.Domain.Entities.Users;
-using GO.Domain.Enums.Management;
 using GO.Domain.Enums.Users;
 using GO.Domain.Exceptions;
 using GO.UnitTests.Builders;
@@ -18,8 +16,6 @@ namespace GO.UnitTests.Commands.Budgets
 	public sealed class CreateBudgetHandlerTest
 	{
 		private readonly CancellationToken _cancellationToken;
-		private const long FakeConnectionId = -1;
-		private const ConnectionType FakeDefaultConnectionType = ConnectionType.Telegram;
 
 		public CreateBudgetHandlerTest()
 		{
@@ -30,20 +26,16 @@ namespace GO.UnitTests.Commands.Budgets
 		[Fact]
 		public async Task Create_budget_with_user_success()
 		{
-			var budgetId = Guid.NewGuid();
-
 			var contextHandler = new ApplicationDbContextTest(nameof(Create_budget_with_user_success));
-			var fakeUserId = await FakeUserHelper.AddCorrectAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+			var fakeUser = FakeUserHelper.CreateUser();
 
-			var command = new CreateBudgetCommand(budgetId, fakeUserId);
+			await FakeUserHelper.AddToDbAsync(contextHandler, fakeUser, _cancellationToken);
+
+			var command = new CreateBudgetCommand(Guid.NewGuid(), fakeUser.Id);
 
 			await TestAsync(contextHandler, command);
 
-			var dbModel = await GetEntityAsync(contextHandler, budgetId, _cancellationToken);
+			var dbModel = await GetEntityAsync(contextHandler, command.BudgetId, _cancellationToken);
 
 			Assert.Equal(command.BudgetId, dbModel.Id);
 			Assert.NotNull(dbModel);
@@ -55,11 +47,8 @@ namespace GO.UnitTests.Commands.Budgets
 			var budgetId = Guid.NewGuid();
 
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_non_existent_user));
-			await FakeUserHelper.AddCorrectAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+
+			await FakeUserHelper.AddToDbAsync(contextHandler, FakeUserHelper.CreateUser(), _cancellationToken);
 
 			var command = new CreateBudgetCommand(budgetId, Guid.NewGuid());
 
@@ -67,14 +56,15 @@ namespace GO.UnitTests.Commands.Budgets
 		}
 
 		[Fact]
-		public void Handle_throws_exception_when_forbidden_wrong_userId()
+		public async Task Handle_throws_exception_when_forbidden_wrong_userId()
 		{
-			var budgetId = Guid.NewGuid();
-
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_forbidden_wrong_userId));
-			var command = new CreateBudgetCommand(budgetId, Guid.NewGuid());
+			
+			await FakeUserHelper.AddToDbAsync(contextHandler, FakeUserHelper.CreateUser(), _cancellationToken);
 
-			Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
+			var command = new CreateBudgetCommand(Guid.NewGuid(), Guid.NewGuid());
+
+			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
 		}
 
 		[Fact]
@@ -83,13 +73,11 @@ namespace GO.UnitTests.Commands.Budgets
 			var budgetId = Guid.NewGuid();
 
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_forbidden_no_access));
-			var fakeUserId = await FakeUserHelper.AddNoRightsAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+			var fakeUser = FakeUserHelper.CreateDefault();
 
-			var command = new CreateBudgetCommand(budgetId, fakeUserId);
+			await FakeUserHelper.AddToDbAsync(contextHandler, fakeUser, _cancellationToken);
+
+			var command = new CreateBudgetCommand(budgetId, fakeUser.Id);
 
 			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, command));
 		}

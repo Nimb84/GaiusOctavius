@@ -11,101 +11,38 @@ namespace GO.UnitTests.Builders
 {
 	internal sealed class FakeUserHelper
 	{
-		public static async Task<Guid> AddCorrectAsync(
-			ApplicationDbContextTest contextHandler,
-			long connectionId,
-			ConnectionType connectionType,
-			CancellationToken cancellationToken)
+		public static User CreateUser(
+			bool isLocked = default,
+			bool isArchived = default) =>
+			CreateDefault(Scopes.Budget, isLocked, isArchived);
+
+		public static User CreateAdmin(
+			bool isLocked = default,
+			bool isArchived = default) =>
+			CreateDefault(Scopes.Management | Scopes.Administration, isLocked, isArchived);
+
+		public static User CreateDefault(
+			Scopes scopes = Scopes.None,
+			bool isLocked = default,
+			bool isArchived = default,
+			long connectionId = default,
+			ConnectionType connectionType = default)
 		{
 			var userId = Guid.NewGuid();
 
-			var fakeCommunications = CreateCommunicationList(userId, connectionId, connectionType);
-			var fakeUser = Create(userId, fakeCommunications);
-
-			await AddToDbAsync(contextHandler, fakeUser, cancellationToken);
-
-			return fakeUser.Id;
-		}
-
-		public static async Task<Guid> AddLockedAsync(
-			ApplicationDbContextTest contextHandler,
-			long connectionId,
-			ConnectionType connectionType,
-			CancellationToken cancellationToken)
-		{
-			var userId = Guid.NewGuid();
-
-			var fakeCommunications = CreateCommunicationList(userId, connectionId, connectionType);
-			var fakeUser = Create(userId, fakeCommunications);
-
-			fakeUser.IsLocked = true;
-
-			await AddToDbAsync(contextHandler, fakeUser, cancellationToken);
-
-			return fakeUser.Id;
-		}
-
-		public static async Task<Guid> AddArchivedAsync(
-			ApplicationDbContextTest contextHandler,
-			long connectionId,
-			ConnectionType connectionType,
-			CancellationToken cancellationToken)
-		{
-			var userId = Guid.NewGuid();
-
-			var fakeCommunications = CreateCommunicationList(userId, connectionId, connectionType);
-			var fakeUser = Create(userId, fakeCommunications);
-
-			fakeUser.IsArchived = true;
-
-			await AddToDbAsync(contextHandler, fakeUser, cancellationToken);
-
-			return fakeUser.Id;
-		}
-
-		public static async Task<Guid> AddNoRightsAsync(
-			ApplicationDbContextTest contextHandler,
-			long connectionId,
-			ConnectionType connectionType,
-			CancellationToken cancellationToken)
-		{
-			var userId = Guid.NewGuid();
-
-			var fakeCommunications = CreateCommunicationList(userId, connectionId, connectionType);
-			var fakeUser = Create(userId, fakeCommunications);
-
-			fakeUser.Scopes = default;
-
-			await AddToDbAsync(contextHandler, fakeUser, cancellationToken);
-
-			return fakeUser.Id;
-		}
-
-		public static Task AddToDbAsync(
-			ApplicationDbContextTest contextHandler,
-			User fakeUser,
-			CancellationToken cancellationToken) =>
-			contextHandler.ExecuteWithTestContextAsync(context =>
+			return new User
 			{
-				context.Users.Add(fakeUser);
-				return context.SaveChangesAsync(cancellationToken);
-			});
-
-		public static User Create(
-			Guid id,
-			List<UserConnection> communications = default) =>
-			new()
-			{
-				Id = id,
+				Id = userId,
 				CreatedBy = Guid.NewGuid(),
 				CreatedDate = DateTimeOffset.UtcNow,
 				FirstName = "TestUserFirstName",
 				LastName = "TestUserLastName",
-				Scopes = Scopes.Budget,
-				Connections = communications,
-				IsLocked = false,
-				IsArchived = false
+				Scopes = scopes,
+				Connections = CreateCommunicationList(userId, connectionId, connectionType),
+				IsLocked = isLocked,
+				IsArchived = isArchived
 			};
+		}
 
 		public static UserConnection CreateCommunication(
 			Guid userId,
@@ -131,11 +68,24 @@ namespace GO.UnitTests.Builders
 					CreateCommunication(userId, connectionId, connectionType)
 				};
 
+		public static Task AddToDbAsync(
+			ApplicationDbContextTest contextHandler,
+			User fakeUser,
+			CancellationToken cancellationToken) =>
+			contextHandler.ExecuteWithTestContextAsync(context =>
+			{
+				context.Users.Add(fakeUser);
+
+				return context.SaveChangesAsync(cancellationToken);
+			});
+
 		public static Task<User> GetEntityAsync(
 			ApplicationDbContextTest contextHandler,
 			Guid userId,
 			CancellationToken cancellationToken) =>
 			contextHandler.ExecuteWithTestContextAsync(context =>
-				context.Users.FirstOrDefaultAsync(user => user.Id == userId, cancellationToken));
+				context.Users
+					.Include(user => user.Connections)
+					.FirstOrDefaultAsync(user => user.Id == userId, cancellationToken));
 	}
 }

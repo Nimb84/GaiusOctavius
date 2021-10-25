@@ -14,8 +14,7 @@ namespace GO.UnitTests.Queries.Users
 	public sealed class GetTelegramUserHandlerTest
 	{
 		private readonly CancellationToken _cancellationToken;
-		private const long FakeConnectionId = 123456;
-		private const ConnectionType FakeDefaultConnectionType = ConnectionType.Telegram;
+		private readonly long _connectionId = 123456;
 
 		public GetTelegramUserHandlerTest()
 		{
@@ -27,13 +26,9 @@ namespace GO.UnitTests.Queries.Users
 		public async Task Get_user_success()
 		{
 			var contextHandler = new ApplicationDbContextTest(nameof(Get_user_success));
-			var fakeUserId = await FakeUserHelper.AddCorrectAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+			var fakeUserId = await AddFakeUserAsync(contextHandler);
 
-			var query = new GetTelegramUserQuery(FakeConnectionId);
+			var query = new GetTelegramUserQuery(_connectionId);
 
 			var response = await TestAsync(contextHandler, query);
 
@@ -45,11 +40,7 @@ namespace GO.UnitTests.Queries.Users
 		public async Task Handle_throws_exception_when_non_existent_user()
 		{
 			var contextHandler = new ApplicationDbContextTest(nameof(Get_user_success));
-			await FakeUserHelper.AddCorrectAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+			await AddFakeUserAsync(contextHandler);
 
 			var query = new GetTelegramUserQuery(-1);
 
@@ -60,13 +51,9 @@ namespace GO.UnitTests.Queries.Users
 		public async Task Handle_throws_exception_when_user_is_locked()
 		{
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_user_is_locked));
-			await FakeUserHelper.AddLockedAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+			await AddFakeUserAsync(contextHandler, isLocked: true);
 
-			var query = new GetTelegramUserQuery(FakeConnectionId);
+			var query = new GetTelegramUserQuery(_connectionId);
 
 			await Assert.ThrowsAsync<GoForbiddenException>(async () => await TestAsync(contextHandler, query));
 		}
@@ -75,15 +62,27 @@ namespace GO.UnitTests.Queries.Users
 		public async Task Handle_throws_exception_when_user_is_archived()
 		{
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_user_is_archived));
-			await FakeUserHelper.AddArchivedAsync(
-				contextHandler,
-				FakeConnectionId,
-				FakeDefaultConnectionType,
-				_cancellationToken);
+			await AddFakeUserAsync(contextHandler, isArchived: true);
 
-			var query = new GetTelegramUserQuery(FakeConnectionId);
+			var query = new GetTelegramUserQuery(_connectionId);
 
 			await Assert.ThrowsAsync<GoNotFoundException>(async () => await TestAsync(contextHandler, query));
+		}
+
+		private async Task<Guid> AddFakeUserAsync(
+			ApplicationDbContextTest contextHandler,
+			bool isLocked = default,
+			bool isArchived = default)
+		{
+			var fakeUser = FakeUserHelper.CreateDefault(
+				isLocked: isLocked,
+				isArchived: isArchived,
+				connectionType: ConnectionType.Telegram,
+				connectionId: _connectionId);
+
+			await FakeUserHelper.AddToDbAsync(contextHandler, fakeUser, _cancellationToken);
+
+			return fakeUser.Id;
 		}
 
 		private Task<TelegramUserResponse> TestAsync(

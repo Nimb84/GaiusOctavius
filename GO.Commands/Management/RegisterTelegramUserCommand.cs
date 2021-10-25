@@ -4,7 +4,7 @@ using MediatR;
 namespace GO.Commands.Management
 {
 	public sealed record RegisterTelegramUserCommand(
-			Guid CurrentUserId,
+			Guid UserId,
 			string FirstName,
 			string LastName,
 			string NickName,
