@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using GO.Integrations.Hangfire.Abstractions.Jobs.Budgets;
+﻿using GO.BackgroundJobs.Abstractions.Jobs.Budgets;
 using Hangfire;
 using MediatR;
+using System.Threading.Tasks;
 
-namespace GO.Integrations.Hangfire.Jobs.Budgets
+namespace GO.BackgroundJobs.Jobs.Budgets
 {
 	internal sealed class WeeklyBudgetStatementJob
 		: IWeeklyBudgetStatementJob
@@ -15,7 +15,7 @@ namespace GO.Integrations.Hangfire.Jobs.Budgets
 			_mediator = mediator;
 		}
 
-		public Task SendStatementAsync(IJobCancellationToken cancellationToken)
+		public Task GenerateAsync(IJobCancellationToken cancellationToken)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -26,7 +26,7 @@ namespace GO.Queries.Handlers.Users
 			GetTelegramUserQuery request,
 			CancellationToken cancellationToken)
 		{
-			var connection = await _context.UserConnections
+			var connectionEntity = await _context.UserConnections
 				.Include(connection => connection.User)
 					.ThenInclude(user => user.Budgets.Where(budget => !budget.IsDisabled))
 				.AsSplitQuery()
@@ -34,18 +34,18 @@ namespace GO.Queries.Handlers.Users
 																					 && connection.ConnectionId == request.TelegramUserId
 																					 && !connection.User.IsArchived, cancellationToken);
 
-			if (connection == default)
+			if (connectionEntity == default)
 				throw new GoNotFoundException(nameof(User));
 
-			if (connection.User.IsLocked)
+			if (connectionEntity.User.IsLocked)
 				throw new GoForbiddenException();
 
 			return new TelegramUserResponse
 			{
-				UserId = connection.UserId,
-				ChatId = connection.ConnectionId,
-				CurrentScope = connection.CurrentScope,
-				BudgetId = connection.User.Budgets.FirstOrDefault()?.BudgetId
+				UserId = connectionEntity.UserId,
+				ChatId = connectionEntity.ConnectionId,
+				CurrentScope = connectionEntity.CurrentScope,
+				BudgetId = connectionEntity.User.Budgets.FirstOrDefault()?.BudgetId
 			};
 		}
 	}

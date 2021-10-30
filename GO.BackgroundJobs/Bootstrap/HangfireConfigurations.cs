@@ -1,15 +1,15 @@
-﻿using System;
-using GO.Integrations.Hangfire.Abstractions;
-using GO.Integrations.Hangfire.Abstractions.Jobs.Budgets;
-using GO.Integrations.Hangfire.Jobs.Budgets;
-using GO.Integrations.Hangfire.Services;
+﻿using GO.BackgroundJobs.Abstractions;
+using GO.BackgroundJobs.Abstractions.Jobs.Budgets;
+using GO.BackgroundJobs.Jobs.Budgets;
+using GO.BackgroundJobs.Services;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
-namespace GO.Integrations.Hangfire.Bootstrap
+namespace GO.BackgroundJobs.Bootstrap
 {
 	public static class HangfireConfigurations
 	{
@@ -55,14 +55,14 @@ namespace GO.Integrations.Hangfire.Bootstrap
 		private static void RunScheduledJobs(this IRecurringJobManager recurringJobManager)
 		{
 			recurringJobManager.AddOrUpdate<IMonthlyBudgetStatementJob>(
-				nameof(IMonthlyBudgetStatementJob.SendStatementAsync),
-				job => job.SendStatementAsync(JobCancellationToken.Null),
+				nameof(IMonthlyBudgetStatementJob.GenerateAsync),
+				job => job.GenerateAsync(JobCancellationToken.Null),
 				CronWeeklyFirstDay,
 				TimeZoneInfo.Utc);
 
 			recurringJobManager.AddOrUpdate<IMonthlyBudgetStatementJob>(
-				nameof(IMonthlyBudgetStatementJob.SendStatementAsync),
-				job => job.SendStatementAsync(JobCancellationToken.Null),
+				nameof(IMonthlyBudgetStatementJob.GenerateAsync),
+				job => job.GenerateAsync(JobCancellationToken.Null),
 				CronMonthlyFirstDay,
 				TimeZoneInfo.Utc);
 		}

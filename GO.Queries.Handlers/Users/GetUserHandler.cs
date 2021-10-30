@@ -24,7 +24,7 @@ namespace GO.Queries.Handlers.Users
 
 		public async Task<UserResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
 		{
-			var user = await _context.Users
+			var userEntity = await _context.Users
 				.Include(user => user.Connections
 					.Where(connection => request.ConnectionType == ConnectionType.Unsupported
 															 || connection.Type == request.ConnectionType))
@@ -32,23 +32,23 @@ namespace GO.Queries.Handlers.Users
 					user => !user.IsArchived
 									&& user.Id == request.UserId, cancellationToken);
 
-			if (user == default
+			if (userEntity == default
 					|| request.ConnectionType != default
-					&& user.Connections.All(connection => connection.ConnectionId == default))
+					&& userEntity.Connections.All(connection => connection.ConnectionId == default))
 				throw new GoNotFoundException(nameof(User));
 
-			if(user.IsLocked)
+			if (userEntity.IsLocked)
 				throw new GoForbiddenException();
 
 			return new UserResponse
 			{
-				Id = user.Id,
-				FirstName = user.FirstName,
-				LastName = user.LastName,
-				Scopes = user.Scopes,
-				Nickname = user.Connections.FirstOrDefault()?.NickName,
-				ConnectionId = user.Connections.FirstOrDefault()?.ConnectionId ?? default,
-				CurrentScope = user.Connections.FirstOrDefault()?.CurrentScope
+				Id = userEntity.Id,
+				FirstName = userEntity.FirstName,
+				LastName = userEntity.LastName,
+				Scopes = userEntity.Scopes,
+				Nickname = userEntity.Connections.FirstOrDefault()?.NickName,
+				ConnectionId = userEntity.Connections.FirstOrDefault()?.ConnectionId ?? default,
+				CurrentScope = userEntity.Connections.FirstOrDefault()?.CurrentScope
 			};
 		}
 	}

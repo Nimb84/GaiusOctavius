@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using GO.Commands.Budgets;
 using GO.Commands.Handlers.Budgets;
 using GO.Domain.Entities.Budgets;
-using GO.Domain.Enums.Users;
 using GO.Domain.Exceptions;
 using GO.UnitTests.Builders;
 using MediatR;
@@ -59,7 +58,7 @@ namespace GO.UnitTests.Commands.Budgets
 		public async Task Handle_throws_exception_when_forbidden_wrong_userId()
 		{
 			var contextHandler = new ApplicationDbContextTest(nameof(Handle_throws_exception_when_forbidden_wrong_userId));
-			
+
 			await FakeUserHelper.AddToDbAsync(contextHandler, FakeUserHelper.CreateUser(), _cancellationToken);
 
 			var command = new CreateBudgetCommand(Guid.NewGuid(), Guid.NewGuid());

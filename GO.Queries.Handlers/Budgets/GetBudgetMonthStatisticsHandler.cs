@@ -36,7 +36,7 @@ namespace GO.Queries.Handlers.Budgets
 			if (userEntity == default || userEntity.HasAccessTo(Scopes.Budget))
 				throw new GoForbiddenException();
 
-			var budget = await _context.Budgets
+			var budgetEntity = await _context.Budgets
 				.Include(budget => budget.Users
 					.Where(relation => request.UserIdList.Contains(relation.UserId)
 														 || relation.UserId == request.UserId))
@@ -77,10 +77,10 @@ namespace GO.Queries.Handlers.Budgets
 				.FirstOrDefaultAsync(budget => !budget.IsArchived
 																			 && budget.Id == request.BudgetId, cancellationToken);
 
-			if (budget == default)
+			if (budgetEntity == default)
 				throw new GoNotFoundException(nameof(Budget));
 
-			return budget;
+			return budgetEntity;
 		}
 	}
 }

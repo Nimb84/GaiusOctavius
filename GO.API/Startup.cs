@@ -1,5 +1,5 @@
 using GO.API.Bootstrap;
-using GO.Integrations.Hangfire.Bootstrap;
+using GO.BackgroundJobs.Bootstrap;
 using GO.Integrations.TelegramBot.Bootstrap;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

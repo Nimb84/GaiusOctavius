@@ -32,24 +32,24 @@ namespace GO.Commands.Handlers.Management
 													 || user.Id == request.CurrentUserId))
 				.ToDictionaryAsync(user => user.Id, user => user, cancellationToken);
 
-			var user = userDictionary.GetValueOrDefault(request.UserId);
+			var targetUser = userDictionary.GetValueOrDefault(request.UserId);
 			var currentUser = userDictionary.GetValueOrDefault(request.CurrentUserId);
 
-			if (user == default)
+			if (targetUser == default)
 				throw new GoNotFoundException(nameof(User));
 
 			if (currentUser == default
 					|| !currentUser.HasAccessTo(Scopes.Management, Scopes.Administration))
 				throw new GoForbiddenException();
 
-			if (!user.IsLocked)
+			if (!targetUser.IsLocked)
 				return Unit.Value;
 
-			user.IsLocked = false;
-			user.UpdatedBy = request.CurrentUserId;
-			user.UpdatedDate = DateTimeOffset.UtcNow;
+			targetUser.IsLocked = false;
+			targetUser.UpdatedBy = request.CurrentUserId;
+			targetUser.UpdatedDate = DateTimeOffset.UtcNow;
 
-			_context.Users.Update(user);
+			_context.Users.Update(targetUser);
 			await _context.SaveChangesAsync(cancellationToken);
 
 			return Unit.Value;

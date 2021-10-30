@@ -14,8 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GO.BackgroundJobs\GO.BackgroundJobs.csproj" />
     <ProjectReference Include="..\GO.Commands.Handlers\GO.Commands.Handlers.csproj" />
     <ProjectReference Include="..\GO.Commands.Validators\GO.Commands.Validators.csproj" />
+    <ProjectReference Include="..\GO.Integrations.TelegramBot\GO.Integrations.TelegramBot.csproj" />
     <ProjectReference Include="..\GO.Queries.Handlers\GO.Queries.Handlers.csproj" />
     <ProjectReference Include="..\GO.Queries.Validators\GO.Queries.Validators.csproj" />
   </ItemGroup>

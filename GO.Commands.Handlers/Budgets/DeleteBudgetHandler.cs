@@ -27,25 +27,25 @@ namespace GO.Commands.Handlers.Budgets
 			DeleteBudgetCommand request,
 			CancellationToken cancellationToken)
 		{
-			var budget = await _context.Budgets
+			var budgetEntity = await _context.Budgets
 				.Include(budget => budget.Users
 					.Where(relation => !relation.IsDisabled && relation.UserId == request.CurrentUserId))
 						.ThenInclude(relation => relation.User)
 				.FirstOrDefaultAsync(budget => !budget.IsArchived
 																			 && budget.Id == request.BudgetId, cancellationToken);
 
-			if (budget == default)
+			if (budgetEntity == default)
 				throw new GoNotFoundException(nameof(Budget));
 
-			var currentUser = budget.Users.FirstOrDefault()?.User;
+			var currentUser = budgetEntity.Users.FirstOrDefault()?.User;
 			if (currentUser == default || !currentUser.HasAccessTo(Scopes.Budget))
 				throw new GoForbiddenException();
 
-			budget.IsArchived = true;
-			budget.UpdatedBy = request.CurrentUserId;
-			budget.UpdatedDate = DateTimeOffset.UtcNow;
+			budgetEntity.IsArchived = true;
+			budgetEntity.UpdatedBy = request.CurrentUserId;
+			budgetEntity.UpdatedDate = DateTimeOffset.UtcNow;
 
-			_context.Budgets.Update(budget);
+			_context.Budgets.Update(budgetEntity);
 			await _context.SaveChangesAsync(cancellationToken);
 
 			return Unit.Value;

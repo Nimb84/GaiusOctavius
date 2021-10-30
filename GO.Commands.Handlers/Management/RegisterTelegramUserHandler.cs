@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using GO.Commands.Management;
@@ -41,7 +42,7 @@ namespace GO.Commands.Handlers.Management
 				FirstName = request.FirstName,
 				LastName = request.LastName,
 				Scopes = Scopes.Budget,
-				Connections = new()
+				Connections = new List<UserConnection>
 				{
 					new()
 					{

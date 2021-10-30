@@ -27,7 +27,7 @@ namespace GO.Commands.Handlers.BudgetRecords
 			ChangeBudgetRecordCategoryCommand request,
 			CancellationToken cancellationToken)
 		{
-			var budget = await _context.Budgets
+			var budgetEntity = await _context.Budgets
 				.Include(budget => budget.Users
 					.Where(relation => !relation.IsDisabled && relation.UserId == request.CurrentUserId))
 						.ThenInclude(relation => relation.User)
@@ -36,23 +36,23 @@ namespace GO.Commands.Handlers.BudgetRecords
 				.FirstOrDefaultAsync(budget => !budget.IsArchived
 																			 && budget.Id == request.BudgetId, cancellationToken);
 
-			if (budget == default)
+			if (budgetEntity == default)
 				throw new GoNotFoundException(nameof(Budget));
 
-			if (!budget.Records.Any())
+			if (!budgetEntity.Records.Any())
 				throw new GoNotFoundException(nameof(Budget.Records));
 
-			var currentUser = budget.Users.FirstOrDefault()?.User;
+			var currentUser = budgetEntity.Users.FirstOrDefault()?.User;
 			if (currentUser == default || !currentUser.HasAccessTo(Scopes.Budget))
 				throw new GoForbiddenException();
 
-			var record = budget.Records.First();
+			var recordEntity = budgetEntity.Records.First();
 
-			record.CategoryType = request.CategoryType;
-			record.UpdatedBy = request.CurrentUserId;
-			record.UpdatedDate = DateTimeOffset.UtcNow;
+			recordEntity.CategoryType = request.CategoryType;
+			recordEntity.UpdatedBy = request.CurrentUserId;
+			recordEntity.UpdatedDate = DateTimeOffset.UtcNow;
 
-			_context.BudgetRecords.Update(record);
+			_context.BudgetRecords.Update(recordEntity);
 			await _context.SaveChangesAsync(cancellationToken);
 
 			return Unit.Value;
